@@ -116,14 +116,18 @@
 </style>
 
 <!-- Formulario de búsqueda -->
-<div class="search-form">
-    <form method="post" action="<portlet:renderURL/>">
-        <input type="text" name="searchName" placeholder="Nombre" value="${searchName}">
-        <input type="text" name="searchSurname" placeholder="Apellido" value="${searchSurname}">
-        <input type="text" name="searchEmail" placeholder="Correo electrónico" value="${searchEmail}">
-        <button type="submit">Buscar</button>
-    </form>
-</div>
+
+<liferay-portlet:actionURL var="searchURL" name="searchUsers"></liferay-portlet:actionURL>
+<aui:form method="POST" action="${searchURL}">
+    <aui:input type="text" name="searchName" placeholder="Nombre" value="${searchName}"></aui:input>
+    <aui:input type="text" name="searchSurname" placeholder="Apellido" value="${searchSurname}"></aui:input>
+    <aui:input type="text" name="searchEmail" placeholder="Correo electrónico" value="${searchEmail}"></aui:input>
+    <aui:input type="hidden" name="currentPage" value="${currentPage}"></aui:input>
+    <aui:button type="submit">Buscar</aui:button>
+</aui:form>
+
+
+
 
 
 <!-- Tabla de usuarios -->

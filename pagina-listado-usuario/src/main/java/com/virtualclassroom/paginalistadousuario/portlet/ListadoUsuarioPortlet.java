@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author palomagq
  */
-@Component(
+/*@Component(
 	immediate = true,
 	property = {
 		"com.liferay.portlet.display-category=category.sample",
@@ -52,44 +52,30 @@ import java.nio.charset.StandardCharsets;
 		"javax.portlet.security-role-ref=power-user,user"
 	},
 	service = Portlet.class
+)*/
+@Component(
+    immediate = true,
+    property = {
+        "com.liferay.portlet.display-category=category.sample",
+        "com.liferay.portlet.header-portlet-css=/css/main.css",
+        "com.liferay.portlet.instanceable=true",
+        "javax.portlet.display-name=ListadoDeUsuario",
+        "javax.portlet.init-param.template-path=/",
+        "javax.portlet.init-param.view-template=/view.jsp",
+        "javax.portlet.name=" + ListadoUsuarioPortletKeys.LISTADODEUSUARIO,
+        "javax.portlet.resource-bundle=content.Language",
+        "javax.portlet.security-role-ref=power-user,user",
+        "javax.portlet.supports.mime-type=text/html", // Agrega esta línea
+        "javax.portlet.init-param.add-process-action-success-action=false", // Evita la redirección por defecto
+        "mvc.command.name = searchUsers"
+    },
+    service = Portlet.class
 )
+
 public class ListadoUsuarioPortlet extends MVCPortlet {
 	
 
 	private static final int USERS_PER_PAGE = 5;
-
-    // Simulación de API que devuelve un JSON con los usuarios
-  /*  private JSONObject simularApiUsuarios() {
-        JSONArray usuariosArray = JSONFactoryUtil.createJSONArray();
-        for (int i = 1; i <= 22; i++) {
-            JSONObject usuario = JSONFactoryUtil.createJSONObject();
-            usuario.put("id", i);
-            usuario.put("name", "admin" + i);
-            usuario.put("surname1", "admin" + i);
-            usuario.put("surname2", "admin" + i);
-            usuario.put("email", "admin" + i + "@example.com");
-            usuariosArray.put(usuario);
-        }
-
-        JSONObject apiResponse = JSONFactoryUtil.createJSONObject();
-        apiResponse.put("usuarios", usuariosArray);
-        return apiResponse;
-    }
-
-    // Obtener usuarios desde la simulación de la API
-    private List<JSONObject> obtenerUsuariosDeApi() {
-        // Simulación de llamada a una API externa
-        JSONObject jsonObject = simularApiUsuarios(); // Obtener el JSONObject de la API simulada
-        JSONArray jsonArray = jsonObject.getJSONArray("usuarios");
-
-        List<JSONObject> usuarios = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            usuarios.add(jsonArray.getJSONObject(i));
-        }
-        return usuarios;
-
-    }*/
-    
 	
 	private String leerArchivoJSON(InputStream inputStream) throws IOException {
 	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
@@ -167,7 +153,6 @@ public class ListadoUsuarioPortlet extends MVCPortlet {
         return usuariosFiltrados;
     }*/
     
-    
  /*   public void addEntry(ActionRequest request, ActionResponse response) {
         try {
             PortletPreferences prefs = request.getPreferences();
@@ -214,6 +199,36 @@ public class ListadoUsuarioPortlet extends MVCPortlet {
         }
     }*/
     
+    //@ProcessAction(name = "searchUsers")
+    @Override
+    public void processAction(ActionRequest actionRequest, ActionResponse actionResponse)
+            throws IOException, PortletException {
+        
+        System.out.println("searchUsers action triggered");
+
+        // Obtener parámetros desde el formulario (POST)
+        String searchName = ParamUtil.getString(actionRequest, "searchName", "");
+        String searchSurname = ParamUtil.getString(actionRequest, "searchSurname", "");
+        String searchEmail = ParamUtil.getString(actionRequest, "searchEmail", "");
+        String currentPage = ParamUtil.getString(actionRequest, "currentPage", "1");
+        
+        System.out.println("Parameters: ");
+        System.out.println("Name: " + searchName);
+        System.out.println("Surname: " + searchSurname);
+        System.out.println("Email: " + searchEmail);
+        System.out.println("Current Page: " + currentPage);
+
+        // Establecer los parámetros como render parameters para doView()
+        /*actionResponse.setRenderParameter("searchName", searchName);
+        actionResponse.setRenderParameter("searchSurname", searchSurname);
+        actionResponse.setRenderParameter("searchEmail", searchEmail);
+        actionResponse.setRenderParameter("currentPage", currentPage);
+        
+        actionResponse.setRenderParameter("jspPage", "/view.jsp");*/
+    }
+
+
+
     
     @Override
     public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
@@ -254,13 +269,6 @@ public class ListadoUsuarioPortlet extends MVCPortlet {
 	        int totalUsuarios = usuariosFiltrados.size();
 	        int totalPages = (int) Math.ceil((double) totalUsuarios / USERS_PER_PAGE);
 	        
-	        System.out.println("Current Page: " + currentPage);
-	        System.out.println("searchName: " + searchName);
-	        System.out.println("searchSurname: " + searchSurname);
-	        System.out.println("searchEmail: " + searchEmail);
-	        System.out.println("url: " + url);
-
-
 	        if (currentPage > totalPages) {
 	            currentPage = totalPages;
 	        }
@@ -281,6 +289,12 @@ public class ListadoUsuarioPortlet extends MVCPortlet {
 	        renderRequest.setAttribute("searchName", searchName);
 	        renderRequest.setAttribute("searchSurname", searchSurname);
 	        renderRequest.setAttribute("searchEmail", searchEmail);
+	        
+	        System.out.println("Current Page: " + currentPage);
+	        System.out.println("searchName: " + searchName);
+	        System.out.println("searchSurname: " + searchSurname);
+	        System.out.println("searchEmail: " + searchEmail);
+	        System.out.println("url: " + url);
 	        
 	        super.doView(renderRequest, renderResponse);
 
